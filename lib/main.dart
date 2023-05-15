@@ -32,13 +32,26 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({super.key});
 
-  int count = 3;
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int count = 3;
+  List<TextEditingController> formList = [];
+
+  addList() {
+    formList.add(TextEditingController());
+  }
+
+  @override
+  void initState() {
+    for (int i = 0; i < count; i++) {
+      addList();
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,10 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
           return Center(
             child: Column(
               children: List.generate(
-                widget.count,
+                count,
                 (index) {
                   return buildContent(
-                      context, setState, index == widget.count - 1 ? 1 : 0);
+                      context, setState, index, index == count - 1 ? 1 : 0);
                 },
               ),
             ),
@@ -60,7 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Padding buildContent(BuildContext context, StateSetter setState, isFinal) {
+  Padding buildContent(
+      BuildContext context, StateSetter setState, int index, int isFinal) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
@@ -75,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     border: Border.all(color: Colors.black, width: 2),
                     borderRadius: BorderRadius.circular(5),
                     color: Colors.white),
+                child: TextFormField(controller: formList[index]),
               ),
             ),
             if (isFinal == 1)
@@ -84,7 +99,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap: () {
                     setState(
                       () {
-                        widget.count++;
+                        addList();
+                        print(formList[index].text);
+                        count++;
                       },
                     );
                   },
@@ -105,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(
                   width: 100,
                 ),
-              )
+              ),
           ],
         ),
       ),

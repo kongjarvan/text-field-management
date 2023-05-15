@@ -38,16 +38,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int count = 3;
-  List<TextEditingController> formList = [];
+  final reasonList = ['설비 고장', '팁 교체', '조작 실수'];
+  List<String> selectedReason = [];
+  List<String> timeList = ['10', '20', '30', '40'];
+  List<String> selectedTime = [];
 
-  addList() {
-    formList.add(TextEditingController());
+  addReason() {
+    selectedReason.add('설비 고장');
+    selectedTime.add('10');
   }
 
   @override
   void initState() {
     for (int i = 0; i < count; i++) {
-      addList();
+      addReason();
     }
     super.initState();
   }
@@ -63,7 +67,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 count,
                 (index) {
                   return buildContent(
-                      context, setState, index, index == count - 1 ? 1 : 0);
+                    context,
+                    setState,
+                    index,
+                    index == count - 1 ? 1 : 0,
+                  );
                 },
               ),
             ),
@@ -84,12 +92,15 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Flexible(
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 2),
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.white),
-                child: TextFormField(controller: formList[index]),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    buildDropdown(selectedReason, reasonList, index, setState),
+                    SizedBox(width: 10),
+                    buildDropdown(selectedTime, timeList, index, setState),
+                  ],
+                ),
               ),
             ),
             if (isFinal == 1)
@@ -99,8 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap: () {
                     setState(
                       () {
-                        addList();
-                        print(formList[index].text);
+                        addReason();
                         count++;
                       },
                     );
@@ -112,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(5),
                         color: Colors.white),
                     alignment: Alignment.center,
-                    child: Text('add'),
+                    child: const Text('add'),
                   ),
                 ),
               )
@@ -121,9 +131,49 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Container(
                   width: 100,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(5),
+                      color: Colors.white),
+                  alignment: Alignment.center,
+                  child: const Text('delete'),
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildDropdown(
+    List<String> dropDownValue,
+    List<String> list,
+    int index,
+    StateSetter setState,
+  ) {
+    return Flexible(
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.black, width: 2),
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.white),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton(
+            isExpanded: true,
+            value: dropDownValue[index],
+            items: list.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                dropDownValue[index] = value as String;
+              });
+            },
+          ),
         ),
       ),
     );
